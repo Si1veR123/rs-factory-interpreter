@@ -5,6 +5,9 @@ pub trait RoomInteraction {
     fn dropoff(&mut self, bit: bool);
 }
 
+#[cfg(feature = "wasm")]
+use serde::{Serialize, Deserialize};
+#[cfg_attr(feature = "wasm", derive(Serialize, Deserialize))]
 #[derive(Debug)]
 pub enum Room {
     Production(bool),
@@ -77,7 +80,8 @@ impl RoomInteraction for Room {
     }
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "wasm", derive(Serialize, Deserialize))]
+#[derive(Debug, Default)]
 pub struct StorageSpace {
     bits: Vec<bool>
 }
@@ -95,12 +99,6 @@ impl StorageSpace {
         }
 
         bytes
-    }
-}
-
-impl Default for StorageSpace {
-    fn default() -> Self {
-        Self { bits: Vec::new() }
     }
 }
 
