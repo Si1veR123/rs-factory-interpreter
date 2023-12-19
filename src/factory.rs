@@ -2,10 +2,6 @@ use std::{io::{Write, stdin, stdout, BufRead}, fmt::Display};
 
 use super::{rooms::{Room, StorageSpace, RoomInteraction}, commands::Command};
 
-// If wasm feature, use serde and derive
-#[cfg(feature = "wasm")]
-use serde::{Serialize, Deserialize};
-#[cfg_attr(feature = "wasm", derive(Serialize, Deserialize))]
 #[derive(Debug)]
 pub struct Factory {
     pub claw_contents: Option<bool>,
