@@ -1,16 +1,18 @@
-use std::{io::{Write, stdin, stdout, BufRead}, fmt::Display};
+use std::{io::{Write, stdin, stdout, Stdin, Stdout, BufReader, BufRead}, fmt::Display};
 
 use super::{rooms::{Room, StorageSpace, RoomInteraction}, commands::Command};
 
 #[derive(Debug)]
-pub struct Factory {
+pub struct Factory<I, O> {
     pub claw_contents: Option<bool>,
-    claw_position: usize,
+    pub claw_position: usize,
     pub rooms: [Room; 9],
-    pub ram: bool
+    pub ram: bool,
+    pub stdin: I,
+    pub stdout: O
 }
 
-impl Default for Factory {
+impl Default for Factory<BufReader<Stdin>, Stdout> {
     fn default() -> Self {
         Self {
             claw_contents: None,
@@ -26,12 +28,14 @@ impl Default for Factory {
                 Room::Invertor(None),
                 Room::And(None)
             ],
-            ram: false
+            ram: false,
+            stdin: BufReader::new(stdin()),
+            stdout: stdout()
         }
     }
 }
 
-impl Display for Factory {
+impl<I, O> Display for Factory<I, O> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 0..9 {
             if self.claw_position == row {
@@ -52,7 +56,7 @@ impl Display for Factory {
     }
 }
 
-impl Factory {
+impl<I: BufRead, O: Write> Factory<I, O> {
     pub fn interpret_command<C: Into<Command>>(&mut self, command: C) {
         match command.into() {
             Command::Boot => (),
@@ -72,22 +76,48 @@ impl Factory {
             Command::SendShipment => {
                 let shipping = self.rooms[5].as_storage_space().unwrap();
                 let text = shipping.get_bytes();
-                stdout().write(&text).expect("Output buffer error");
+                self.stdout.write(&text).expect("Output buffer write error");
+                self.stdout.flush().expect("Output buffer flush error");
                 shipping.clear();
             },
             Command::RequestShipment => {
                 let supply = self.rooms[6].as_storage_space().unwrap();
-                let mut buffer = Vec::new();
-                stdin().lock().read_until(b'\n', &mut buffer).expect("Input buffer error");
+
+                let mut buffer = String::new();
+                self.stdin.read_line(&mut buffer).expect("Input buffer error");
+
                 supply.clear();
 
-                for &byte in buffer.iter().rev() {
+                for byte in buffer.bytes().rev() {
                     if byte == b'\n' || byte == b'\r' { continue }
                     for i in 0..8 {
                         supply.dropoff(((1 << i) & byte) != 0)
                     }
                 }
             },
+        }
+    }
+}
+
+impl<I, O> Factory<I, O> {
+    pub fn new_with_streams(input: I, output: O) -> Self {
+        Self {
+            claw_contents: None,
+            claw_position: 0,
+            rooms: [
+                Room::Production(true),
+                Room::StorageSpace(StorageSpace::default()),
+                Room::StorageSpace(StorageSpace::default()),
+                Room::StorageSpace(StorageSpace::default()),
+                Room::Garbage,
+                Room::Shipping(StorageSpace::default()),
+                Room::Supply(StorageSpace::default()),
+                Room::Invertor(None),
+                Room::And(None)
+            ],
+            ram: false,
+            stdin: input,
+            stdout: output
         }
     }
 

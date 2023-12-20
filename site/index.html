@@ -1,1 +1,31 @@
-hey
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Factory Interpreter</title>
+  </head>
+  <body>
+    <script>
+      function stdin(id) {
+        return prompt() + "\n"
+      }
+
+      function stdout(id, out) {
+        console.log(out)
+      }
+    </script>
+    <script type="module">
+      let hello_world = `BOOTI>>>>>>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>O`
+
+      import init, { Command, create_factory, read_commands, interpret_command } from "./pkg/factory.js";
+      init().then((test) => {
+        let id = create_factory();
+        let commands = read_commands(hello_world);
+        
+        for (let command of commands) {
+            interpret_command(id, command);
+        }
+      });
+    </script>
+  </body>
+</html>

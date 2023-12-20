@@ -1,6 +1,7 @@
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::wasm_bindgen;
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
+#[derive(Debug)]
 pub enum Command {
     Boot,
     Left,

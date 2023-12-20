@@ -25,6 +25,16 @@ impl Room {
             _ => None
         }
     }
+
+    // for variants with a binary state, or 3 states (Option<bool>)
+    pub fn as_option_bool(&mut self) -> Option<&mut bool> {
+        match self {
+            Room::Production(b) => Some(b),
+            Room::Invertor(b) |
+            Room::And(b) => b.as_mut(),
+            _ => None
+        }
+    }
 }
 
 impl Display for Room {
@@ -79,7 +89,7 @@ impl RoomInteraction for Room {
 
 #[derive(Debug, Default)]
 pub struct StorageSpace {
-    bits: Vec<bool>
+    pub bits: Vec<bool>
 }
 
 impl StorageSpace {
