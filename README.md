@@ -32,6 +32,6 @@ Build with
 ```bash
 wasm-pack build --release --target web --out-dir site/pkg -- --features=wasm
 ```
-This will compile the library to WASM build the JavaScript bindings in the folder `site/pkg`.
+This will compile the library to WASM and build the JavaScript bindings in the folder `site/pkg`.
 
-`site/basic.html` is an example of using these bindings.
+[site/basic.html](site/basic.html) is an example of using these bindings.
