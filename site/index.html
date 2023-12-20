@@ -6,24 +6,25 @@
   </head>
   <body>
     <script>
-      function stdin(id) {
+      function stdin() {
         return prompt() + "\n"
       }
 
-      function stdout(id, out) {
+      function stdout(out) {
         console.log(out)
       }
     </script>
     <script type="module">
       let hello_world = `BOOTI>>>>>>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>O`
 
-      import init, { Command, create_factory, read_commands, interpret_command } from "./pkg/factory.js";
+      import init, { Command, create_factory, read_commands, interpret_command, get_factory_stats } from "./pkg/factory.js";
       init().then((test) => {
         let id = create_factory();
         let commands = read_commands(hello_world);
         
         for (let command of commands) {
             interpret_command(id, command);
+            console.log(get_factory_stats(id));
         }
       });
     </script>

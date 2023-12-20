@@ -30,8 +30,8 @@ The binary runs a hello world script, printing the factory after each step.
 # WASM bindings
 Build with 
 ```bash
-wasm-pack build --target web --out-dir site/pkg -- --features=wasm
+wasm-pack build --release --target web --out-dir site/pkg -- --features=wasm
 ```
 This will compile the library to WASM build the JavaScript bindings in the folder `site/pkg`.
 
-`site/index.html` is an example of using these bindings.
+`site/basic.html` is an example of using these bindings.
