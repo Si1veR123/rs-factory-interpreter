@@ -3,30 +3,207 @@
   <head>
     <meta charset="utf-8" />
     <title>Factory Interpreter</title>
+    <link rel="stylesheet" href="./index.css">
   </head>
   <body>
     <script>
       function stdin() {
-        return prompt() + "\n"
+        return prompt("Requesting Input:") + "\n"
       }
 
       function stdout(out) {
-        console.log(out)
+        let el = document.getElementById("stdout");
+        el.innerText += out;
       }
     </script>
     <script type="module">
-      let hello_world = `BOOTI>>>>>>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>v<v>O`
+      let helloWorld = `BOOTv>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>>>vv<<v<<<<<v>>>>>v<<<<<O`
 
-      import init, { Command, create_factory, read_commands, interpret_command, get_factory_stats } from "./pkg/factory.js";
-      init().then((test) => {
-        let id = create_factory();
-        let commands = read_commands(hello_world);
-        
-        for (let command of commands) {
-            interpret_command(id, command);
-            console.log(get_factory_stats(id));
+      import init, { Command, create_factory, remove_factory, read_commands, interpret_command, get_factory_state } from "./pkg/factory.js";
+      init().then(() => {
+        var instructionCounter = 0;
+        var id = create_factory();
+        var commands = undefined;
+        var playHandle = undefined;
+
+        loadProgram(helloWorld);
+
+        function loadProgram(programText) {
+          commands = read_commands(programText);
+          document.getElementById("current-program").innerText = programText;
+          instructionCounter = 0;
         }
+
+        function showState(state) {
+          let claw = document.getElementById("claw");
+          let rooms = document.getElementsByClassName("room");
+          let clawPosLeft = rooms[state.claw_position].getBoundingClientRect().left;
+          claw.style.left = clawPosLeft + "px";
+
+          let clawBit = document.getElementById("claw-bit");
+          if (state.claw_contents === undefined) {
+            clawBit.innerText = "";
+          } else {
+            clawBit.innerText = Number(state.claw_contents);
+          }
+          
+          let ramVal = document.getElementById("ram-val");
+          ramVal.innerText = Number(state.ram);
+        }
+
+        function reset() {
+          remove_factory(id);
+          instructionCounter = 0;
+          id = create_factory();
+          showState(get_factory_state(id));
+        }
+
+        function step() {
+            interpret_command(id, commands[instructionCounter]);
+            let state = get_factory_state(id);
+            showState(state);
+            instructionCounter++;
+        }
+
+        function play() {
+          if (playHandle === undefined) {
+            playHandle = setInterval(step, 100);
+            document.getElementById("play-button").style.outline = "2px solid green";
+          } else {
+            clearInterval(playHandle);
+            playHandle = undefined;
+            document.getElementById("play-button").style.outline = "0";
+          }
+        }
+
+        document.getElementById("load-button").addEventListener("click", () => loadProgram(document.getElementById("input-code").value));
+        document.getElementById("step-button").addEventListener("click", step);
+        document.getElementById("reset-button").addEventListener("click", reset);
+        document.getElementById("play-button").addEventListener("click", play);
       });
     </script>
+
+    <div id = "factory">
+      <div id="top-bar">
+        <p class="header">
+          Ram:
+          <span id="ram-val">0</span>
+        </p>
+        <div id="command-control">
+          <button id="reset-button">
+            <img src="./reset.svg">
+          </button>
+          <button id="step-button">
+            <img src="./next.svg">
+          </button>
+          <button id="play-button" >
+            <img src="./play.svg">
+          </button>
+        </div>
+      </div>
+      <div id="clawspace">
+        <div id="claw">
+          <img src="./image.png">
+          <p id="claw-bit">0</p>
+        </div>
+      </div>
+      <div id="rooms">
+        <div class="room">
+          <div class="room-inner">
+
+          </div>
+          <p class="room-label">
+            Production
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            Storage Space 1
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            Storage Space 2
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            Storage Space 3
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            Garbage
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            Shipping
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            Supply
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            Inverter
+          </p>
+        </div>
+        <div class="room">
+          <div class="room-inner">
+            
+          </div>
+          <p class="room-label">
+            And
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="bottom">
+      <div>
+        <p>Input Code</p>
+        <textarea class="text-panel" id="input-code">
+
+        </textarea>
+        <p><button id="load-button">Load</button></p>
+      </div>
+      <div>
+        <p>Current Program</p>
+        <textarea class="text-panel" id="current-program" readonly>
+
+        </textarea>
+      </div>
+      <div>
+        <p>Output</p>
+        <textarea class="text-panel" id="stdout" readonly>
+
+        </textarea>
+      </div>
+    </div>
+
   </body>
 </html>

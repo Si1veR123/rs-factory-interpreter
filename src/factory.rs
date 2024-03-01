@@ -74,14 +74,14 @@ impl<I: BufRead, O: Write> Factory<I, O> {
                 None => self.ram = !self.ram
             },
             Command::SendShipment => {
-                let shipping = self.rooms[5].as_storage_space().unwrap();
+                let shipping = self.rooms[5].as_storage_space_mut().unwrap();
                 let text = shipping.get_bytes();
                 self.stdout.write(&text).expect("Output buffer write error");
                 self.stdout.flush().expect("Output buffer flush error");
                 shipping.clear();
             },
             Command::RequestShipment => {
-                let supply = self.rooms[6].as_storage_space().unwrap();
+                let supply = self.rooms[6].as_storage_space_mut().unwrap();
 
                 let mut buffer = String::new();
                 self.stdin.read_line(&mut buffer).expect("Input buffer error");

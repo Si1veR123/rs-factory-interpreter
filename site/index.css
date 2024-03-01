@@ -1,0 +1,113 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#factory {
+    height: 75vh;
+    width: 100vw;
+    background-color: lightgray;
+}
+
+#top-bar {
+    height: 10%;
+    width: 100%;
+    background-color: rgb(200, 200, 200);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+}
+
+.header {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+#clawspace {
+    width: 100%;
+    height: 25%;
+}
+
+#claw {
+    position: relative;
+    width: 9vw;
+    left: 100px;
+    top: 0;
+}
+
+#claw-bit {
+    text-align: center;
+    font-size: 40px;
+    margin: 0;
+}
+
+#claw img {
+    width: 100%;
+}
+
+#rooms {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 60%;
+    justify-content: space-around;
+}
+
+.room {
+    width: 9vw;
+    height: 100%;
+}
+
+.room-inner {
+    height: 80%;
+    width: 100%;
+    border-bottom: 5px black solid;
+}
+
+.room-label {
+    text-align: center;
+    font-weight: bold;
+}
+
+#command-control {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#command-control button {
+    margin: 5px 10px;
+    padding: 15px;
+}
+
+#command-control img {
+    height: 100%;
+}
+
+#bottom {
+    display: flex;
+    width: 100%;
+}
+
+#bottom > div {
+    flex: 1;
+    margin: 10px;
+}
+
+#bottom p {
+    text-align: center;
+}
+
+.text-panel {
+    width: 100%;
+    resize: vertical;
+    height: 12vh;
+    padding: 0;
+}
+
+#input-code {
+    resize: none;
+}

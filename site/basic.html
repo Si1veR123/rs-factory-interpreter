@@ -123,7 +123,7 @@
     O`
 
       import init, { Command, create_factory, read_commands, interpret_command } from "./pkg/factory.js";
-      init().then((test) => {
+      init().then(() => {
         let id = create_factory();
         let commands = read_commands(hello_world);
         

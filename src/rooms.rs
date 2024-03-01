@@ -17,7 +17,16 @@ pub enum Room {
 }
 
 impl Room {
-    pub fn as_storage_space(&mut self) -> Option<&mut StorageSpace> {
+    pub fn as_storage_space_mut(&mut self) -> Option<&mut StorageSpace> {
+        match self {
+            Room::StorageSpace(s) |
+            Room::Shipping(s) |
+            Room::Supply(s) => Some(s),
+            _ => None
+        }
+    }
+
+    pub fn as_storage_space(&self) -> Option<&StorageSpace> {
         match self {
             Room::StorageSpace(s) |
             Room::Shipping(s) |
@@ -27,11 +36,20 @@ impl Room {
     }
 
     // for variants with a binary state, or 3 states (Option<bool>)
-    pub fn as_option_bool(&mut self) -> Option<&mut bool> {
+    pub fn as_option_bool_mut(&mut self) -> Option<&mut bool> {
         match self {
             Room::Production(b) => Some(b),
             Room::Invertor(b) |
             Room::And(b) => b.as_mut(),
+            _ => None
+        }
+    }
+
+    pub fn as_option_bool(&self) -> Option<bool> {
+        match self {
+            Room::Production(b) => Some(*b),
+            Room::Invertor(b) |
+            Room::And(b) => b.clone(),
             _ => None
         }
     }
